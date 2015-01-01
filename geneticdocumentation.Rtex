@@ -1,0 +1,279 @@
+\documentclass{article}
+\usepackage{times, graphicx}
+\usepackage{geometry}
+\usepackage[parfill]{parskip}
+\usepackage{natbib}
+\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1.5in}
+
+\begin{document}
+\title{Function Documentation}
+\author{
+     Florian Papion\\
+     Qiuhan Wu\\
+     Brianna Noland\\
+}
+\date{12/12/2014}
+\maketitle
+
+%%Primary function
+\rule{\textwidth}{1pt} \par \noindent
+\begin{center}
+\begin{tabbing}
+Primary Function\quad \= : \= \\[5pt]
+\textsf{\textbf{\emph{select}}} \>Carries out variable selection optimization using auxiliary functions\\[5pt]
+\end{tabbing}
+\end{center}
+\rule{\textwidth}{1pt} \par \noindent
+
+\textsf{\textbf{Description}}
+\newline
+\newline
+\textsf{\textbf{Parameters}}
+\begin{enumerate}
+  \item \emph{initialPopulationSize}: Integer, size of beginning population (initial number of models).
+  \item \emph{numberGenerations}: Integer, number of iterations.
+  \item \emph{regressionType}: String, type of regression: LM or GLM.
+  \item \emph{criterion}: optional: String, defaults to AIC. If you would like to use a BIC, enter it as a parameter.
+  \item \emph{mutationProbability}: Double, probability that any given chromosome will be mutated randomly.
+  \item \emph{replacementPercentage}: Double, percent of parent population to replace with children.
+\end{enumerate}
+\textsf{\textbf{Output}} Returns optimal model and its associated fitness score.
+\newline
+\newline
+\textsf{\textbf{Examples}}
+\begin{enumerate}
+  \item AICGAtest $\gets$ select(initialPopulationSize=25, numberGenerations=10, regressionType = "LM", replacementPercentage=.5, mutationProbability = .01) 
+  \item BICGAtest $\gets$ select(initialPopulationSize=25, numberGenerations=30, regressionType = "GLM", criterion = "BIC", replacementPercentage=.6)
+\end{enumerate}
+
+%%Reading function
+\rule{\textwidth}{1pt} \par \noindent
+\begin{center}
+\begin{tabbing}
+Auxiliary Function 2\quad \= : \= \\[5pt]
+\textsf{\textbf{\emph{readDataFile}}} \>Reads in pre-cleaned datafile\\[5pt]
+\end{tabbing}
+\end{center}
+\rule{\textwidth}{1pt} \par \noindent
+
+\textsf{\textbf{Description}}
+\newline
+\newline
+\textsf{\textbf{Parameters}}
+\begin{enumerate}
+  \item \emph{fileName}: String, name of file to be read in.
+  \item \emph{sep}: Seperator type used in data file (i.e. ",", ":", " ", etc). Optional - defaults to ",".
+  \item \emph{dependentVariable}: String, variable from data file on which to regress other variables.
+\end{enumerate}
+\textsf{\textbf{Output}} Returns data loaded to variable "dataFile"
+\newline
+\newline
+\textsf{\textbf{Examples}}
+\begin{enumerate}
+  \item dataFile $\gets$ readDataFile(fileName, sep=":", dependentVariable)
+  \item dataFile $\gets$ readDataFile(fileName, dependentVariable)
+\end{enumerate}
+
+%%Initiation function
+\rule{\textwidth}{1pt} \par \noindent
+\begin{center}
+\begin{tabbing}
+Auxiliary Function 1\quad \= : \= \\[5pt]
+\textsf{\textbf{\emph{initiate}}} \>Generate initial bolean matrix for parameter selection\\[5pt]
+\end{tabbing}
+\end{center}
+\rule{\textwidth}{1pt} \par \noindent
+
+\textsf{\textbf{Description}}
+\newline
+\newline
+\textsf{\textbf{Parameters}}
+\begin{enumerate}
+  \item \emph{data}: Dataframe, input data containing all independent variables of interest.
+  \item \emph{populationSize}: Integer, number of models in first generation (default = 50 )
+\end{enumerate}
+\textsf{\textbf{Output}} Returns matrix PopulationSize as data frame
+\newline
+\newline
+\textsf{\textbf{Note}} All zero rows are excluded, since the purpose of the function is for variable selection.
+\newline
+\newline
+\textsf{\textbf{Examples}}
+\begin{enumerate}
+  \item parentPopulation $\gets$ initiate(dataFileName, 25)
+  \item parentPopulation $\gets$ initiate(dataFileName)
+\end{enumerate}
+
+%%Fitness function
+\rule{\textwidth}{1pt} \par \noindent
+\begin{center}
+\begin{tabbing}
+Auxiliary Function 3\quad \= : \= \\[5pt]
+\textsf{\textbf{\emph{runModel}}} \>Evaluates the fitness of each set of variable combinations (model) in the population\\[5pt]
+\end{tabbing}
+\end{center}
+\rule{\textwidth}{1pt} \par \noindent
+
+\textsf{\textbf{Description}}
+\newline
+\newline
+\textsf{\textbf{Parameters}}
+\begin{enumerate}
+  \item \emph{model}: Matrix, created by initiation function
+  \item \emph{dependentVariable}: String, name of dependent variable in model
+  \item \emph{regressionType}: String, regression type (LM or GLM)
+  \item \emph{criterion}: String, optimization technique (optional- defaults to AIC, but BIC may be used)
+\end{enumerate}
+\textsf{\textbf{Output}} Returns a results matrix containing a column with the fitness score for each model
+\newline
+\newline
+\textsf{\textbf{Note}} Uses helper functions disjointSets and fitness.
+\newline
+\newline
+\textsf{\textbf{Examples}}
+\begin{enumerate}
+  \item modelFit $\gets$ runModel(populationMatrix, dependentVariable, regregressionType="LM")
+  \item modelFit $\gets$ runModel(populationMatrix, dependentVariable, regressionType="LM", criterion="BIC")
+\end{enumerate}
+
+%% Crossover function
+\rule{\textwidth}{1pt} \par \noindent
+\begin{center}
+\begin{tabbing}
+Auxiliary Function 4\quad \= : \= \\[5pt]
+\textsf{\textbf{\emph{crossover}}} \>Realizes the crossover between two chromosomes\\[5pt]
+\end{tabbing}
+\end{center}
+\rule{\textwidth}{1pt} \par \noindent
+
+\textsf{\textbf{Description}}
+\newline
+\newline
+\textsf{\textbf{Parameters}}
+\begin{enumerate}
+  \item \emph{chromosome1}: Vector, The first parent chromosome
+  \item \emph{chromosome2}: Vector, the second parent chromosome
+\end{enumerate}
+\textsf{\textbf{Output}} One chromosome containing the starting sequence of chromosome1 (before the splitting point) and the finishing sequence of chromosome2 (after the splitting point)
+\newline
+\newline
+\textsf{\textbf{Note}} Two chromosomes produce one chromosome after the crossover.
+\newline
+\newline
+\textsf{\textbf{Examples}}
+\begin{enumerate}
+  \item crossedChromosome $\gets$  crossover(chromosome1, chromosome2)
+\end{enumerate}
+
+%% Matching function
+\rule{\textwidth}{1pt} \par \noindent
+\begin{center}
+\begin{tabbing}
+Auxiliary Function 6\quad \= : \= \\[5pt]
+\textsf{\textbf{\emph{Matching}}} \>Matches two parents to breed within a population\\[5pt]
+\end{tabbing}
+\end{center}
+\rule{\textwidth}{1pt} \par \noindent
+
+\textsf{\textbf{Description}}
+\newline
+\newline
+\textsf{\textbf{Parameters}}
+\begin{enumerate}
+  \item \emph{parentPopulation}: Matrix, the parent population
+  \item \emph{selectionProbability}: Double, the probability for each parent to be chosen to breed
+\end{enumerate}
+\textsf{\textbf{Output}} The two parents chosen to breed
+\newline
+\newline
+\textsf{\textbf{Examples}}
+\begin{enumerate}
+  \item parents $\gets$  matching(parentPopulation, selectionProbability)
+\end{enumerate}
+
+%%Breeding function
+\rule{\textwidth}{1pt} \par \noindent
+\begin{center}
+\begin{tabbing}
+Auxiliary Function 8\quad \= : \= \\[5pt]
+\textsf{\textbf{\emph{Breeding}}} \>Generates an offspring population by breeding a parent population \\[5pt]
+\end{tabbing}
+\end{center}
+\rule{\textwidth}{1pt} \par \noindent
+
+\textsf{\textbf{Description}}
+\newline
+\newline
+\textsf{\textbf{Parameters}}
+\begin{enumerate}
+  \item \emph{parentPopulation}: Matrix, the parent population
+\end{enumerate}
+\textsf{\textbf{Output}} A new offspring population resulting from the breeding of the parent population
+\newline
+\newline
+\textsf{\textbf{Note}} The offspring population is of the same size as the parent population
+\newline
+\newline
+\textsf{\textbf{Examples}}
+\begin{enumerate}
+  \item offspringPopulation $\gets$  breeding(parentPopulation)
+\end{enumerate}
+
+%%Mutation function
+\rule{\textwidth}{1pt} \par \noindent
+\begin{center}
+\begin{tabbing}
+Auxiliary Function 5\quad \= : \= \\[5pt]
+\textsf{\textbf{\emph{mutation}}} \>Realizes the mutation operation of resulting crossed-over chromosomes\\[5pt]
+\end{tabbing}
+\end{center}
+\rule{\textwidth}{1pt} \par \noindent
+
+\textsf{\textbf{Description}}
+\newline
+\newline
+\textsf{\textbf{Parameters}}
+\begin{enumerate}
+  \item \emph{offspringPopulation}: Matrix, output generated by crossover function
+  \item \emph{mutationProbability}: Double, probability of mutation (default = 0.01, must be between 0 and 1)
+\end{enumerate}
+\textsf{\textbf{Output}} Mutated chromosomes (matrix)
+\newline
+\newline
+\textsf{\textbf{Note}} Locus in which mutation occurs is random with probability of mutation determined by user
+\newline
+\newline
+\textsf{\textbf{Examples}}
+\begin{enumerate}
+  \item mutatedOffspring $\gets$ mutation(offspringPopulation)
+  \item mutatedOffspring $\gets$ mutation(offspringPopulation, mutationProbability=0.05)
+\end{enumerate}
+
+%%Replacement function
+\rule{\textwidth}{1pt} \par \noindent
+\begin{center}
+\begin{tabbing}
+Auxiliary Function 7\quad \= : \= \\[5pt]
+\textsf{\textbf{\emph{replacement}}} \>Replaces current population with most fit of parent and offspring populations\\[5pt]
+\end{tabbing}
+\end{center}
+\rule{\textwidth}{1pt} \par \noindent
+
+\textsf{\textbf{Description}}
+\newline
+\newline
+\textsf{\textbf{Parameters}}
+\begin{enumerate}
+  \item \emph{sortedParent}: Dataframe, ranked and sorted parent population chromosomes 
+  \item \emph{sortedOffspring}: Dataframe, ranked and sorted 1st generation chromosomes
+  \item \emph{replacementPercentage}: Double, percentage of replacement by offspring population (default = 0.4, must be between 0 and 1).
+\end{enumerate}
+\textsf{\textbf{Output}} Defaults to a dataframe containing 60% parent population, 40% offspring population. These percentages are determined by the user.
+\newline
+\newline
+\textsf{\textbf{Examples}}
+\begin{enumerate}
+  \item newGeneration $\gets$ replacement(sortedParent, sortedOffspring, replacementPercentage)
+  \item newGeneration $\gets$ replacement(sortedParent, sortedOffspring, replacementPercentage)
+\end{enumerate}
+\end{document}
